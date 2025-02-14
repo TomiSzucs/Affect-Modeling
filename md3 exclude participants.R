@@ -9,7 +9,10 @@ load.module("lecuyer")
 set.seed(2024)
 
 setwd("C:/Users/u0166113/OneDrive - KU Leuven/Documents/Affectometrics/Study 1")
-data <- read.table("choice_18-06-2024_cleaned_rt3000ms100ms.csv", header = TRUE, sep = ",")  # Adjust 'sep' based on your file's delimiter
+#data <- read.table("data/choice_18-06-2024_cleaned_rt3000ms100ms.csv", header = TRUE, sep = ",")  # Adjust 'sep' based on your file's delimiter
+data <- read.table("data/choice_v2_28-11-2024_cleaned_rt3000ms100ms_added_columns.csv", header = TRUE, sep = ",")
+data = subset(data, select = c(outcome, outcome_wl, affect, participant, affect_lag_1, probability, outcome_report, rt))
+
 #true.parameters <- read.table("M4 true parameters.txt", header = TRUE, sep = ",")  # Adjust 'sep' based on your file's delimiter
 
 #load("jags_sample_md3.RData")
@@ -32,9 +35,9 @@ summary(consecutive_response$lengths)
 consecutive_pair <-consecutive_response$values[consecutive_response$lengths >= 15]
 consecutive_pair = sapply(consecutive_pair, function(x) substring(x, 1, nchar(x) - 1))
 consecutive_pair = as.numeric(unique(consecutive_pair))
-
+print(length(unique(data$participant)))
 data =  data[ !(data$participant %in% consecutive_pair),]
-
+print(length(unique(data$participant)))
 
 #assign an index from 1 to n to participants
 data$Sub = as.numeric(factor(data$participant, levels = unique(data$participant)))
@@ -64,8 +67,9 @@ data$outcome.absolute.loss = ifelse(data$outcome<0, abs(data$outcome), 0)
 #convert reaction time from ms to s 
 data$rt = data$rt/1000
 names(data)[names(data) == "affect"] <- "Decision"
-data$Decision.lag.1 <- c(NA, data$Decision[-nrow(data)])
-data$Decision.lag.1[which(!duplicated(data$Sub))] <- 0
+names(data)[names(data) == "affect_lag_1"] <- "Decision.lag.1"
+#data$Decision.lag.1 <- c(NA, data$Decision[-nrow(data)])
+#data$Decision.lag.1[which(!duplicated(data$Sub))] <- 0
 
 
 
@@ -226,7 +230,7 @@ stopTime = proc.time()
 elapsedTime = stopTime - startTime
 print(elapsedTime/60) #Tells how long it took to run analysis
 
-save(jagsModel_md3, file = "jags_sample_md3_Tomi.RData")
+save(jagsModel_md3, file = "jags_sample_md3_v2123.RData")
 
 traceplot(jagsModel_md3$mcmc[,"MuV[1]"])
 traceplot(jagsModel_md3$mcmc[,"MuV[2]"])

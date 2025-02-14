@@ -569,7 +569,7 @@ model {
   #likelihood function
   for (t in 1:nTrials) {
       
-      y[t] ~ dnorm(beta[subject[t],1] + beta[subject[t],2] * o.true[t] * pe[t]+ 
+      y[t] ~ dnorm(beta[subject[t],1] + beta[subject[t],2] * o.true[t] * [t]+ 
                     beta[subject[t],3] *y_previous[t], precy)
   }
   
